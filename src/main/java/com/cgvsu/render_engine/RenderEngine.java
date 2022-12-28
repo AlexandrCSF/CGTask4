@@ -25,7 +25,8 @@ public class RenderEngine {
             final int width,
             final int height,
             Color fillColor,
-            HashMap<RenderStyle,Boolean> renderProperties)
+            HashMap<RenderStyle,Boolean> renderProperties,
+            Color[][] texture)
     {
         double redColor = fillColor.getRed();
         double greenColor = fillColor.getGreen();

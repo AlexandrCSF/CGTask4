@@ -7,7 +7,6 @@ import com.cgvsu.model.Polygon;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class ObjReader {
@@ -24,7 +23,7 @@ public class ObjReader {
 		Scanner scanner = new Scanner(fileContent);
 		while (scanner.hasNextLine()) {
 			final String line = scanner.nextLine();
-			List<String> wordsInLine = new ArrayList<>(Arrays.asList(line.split("\\s+")));
+			ArrayList<String> wordsInLine = new ArrayList<String>(Arrays.asList(line.split("\\s+")));
 			if (wordsInLine.isEmpty()) {
 				continue;
 			}
@@ -51,16 +50,12 @@ public class ObjReader {
 				default -> {}
 			}
 		}
+
 		return result;
 	}
-	// f 1//3 1/2/3 1 1/2
 
 	// Всем методам кроме основного я поставил модификатор доступа protected, чтобы обращаться к ним в тестах
-	protected static Vector3f parseVertex(final List<String> wordsInLineWithoutToken, int lineInd) {
-		if (wordsInLineWithoutToken.size() != 3) {
-			throw new ObjReaderExceptions.ObjReaderException("The number of vertex coordinates is incorrect", lineInd);
-		}
-
+	protected static Vector3f parseVertex(final ArrayList<String> wordsInLineWithoutToken, int lineInd) {
 		try {
 			return new Vector3f(
 					Float.parseFloat(wordsInLineWithoutToken.get(0)),
@@ -68,36 +63,28 @@ public class ObjReader {
 					Float.parseFloat(wordsInLineWithoutToken.get(2)));
 
 		} catch(NumberFormatException e) {
-			throw new ObjReaderExceptions.ObjReaderException("Failed to parse float value.", lineInd);
+			throw new ObjReaderException("Failed to parse float value.", lineInd);
 
 		} catch(IndexOutOfBoundsException e) {
-			throw new ObjReaderExceptions.ObjReaderException("Too few vertex arguments.", lineInd);
+			throw new ObjReaderException("Too few vertex arguments.", lineInd);
 		}
 	}
 
-	protected static Vector2f parseTextureVertex(final List<String> wordsInLineWithoutToken, int lineInd) {
-		if (wordsInLineWithoutToken.size() != 2 && wordsInLineWithoutToken.size() != 3) {
-			throw new ObjReaderExceptions.ObjReaderException("The number of texture vertex coordinates is incorrect", lineInd);
-		}
-
+	protected static Vector2f parseTextureVertex(final ArrayList<String> wordsInLineWithoutToken, int lineInd) {
 		try {
 			return new Vector2f(
 					Float.parseFloat(wordsInLineWithoutToken.get(0)),
 					Float.parseFloat(wordsInLineWithoutToken.get(1)));
 
 		} catch(NumberFormatException e) {
-			throw new ObjReaderExceptions.ObjReaderException("Failed to parse float value.", lineInd);
+			throw new ObjReaderException("Failed to parse float value.", lineInd);
 
 		} catch(IndexOutOfBoundsException e) {
-			throw new ObjReaderExceptions.ObjReaderException("Too few texture vertex arguments.", lineInd);
+			throw new ObjReaderException("Too few texture vertex arguments.", lineInd);
 		}
 	}
 
-	protected static Vector3f parseNormal(final List<String> wordsInLineWithoutToken, int lineInd) {
-		if (wordsInLineWithoutToken.size() != 3) {
-			throw new ObjReaderExceptions.ObjReaderException("The number of normal coordinates is incorrect", lineInd);
-		}
-
+	protected static Vector3f parseNormal(final ArrayList<String> wordsInLineWithoutToken, int lineInd) {
 		try {
 			return new Vector3f(
 					Float.parseFloat(wordsInLineWithoutToken.get(0)),
@@ -105,28 +92,21 @@ public class ObjReader {
 					Float.parseFloat(wordsInLineWithoutToken.get(2)));
 
 		} catch(NumberFormatException e) {
-			throw new ObjReaderExceptions.ObjReaderException("Failed to parse float value.", lineInd);
+			throw new ObjReaderException("Failed to parse float value.", lineInd);
 
 		} catch(IndexOutOfBoundsException e) {
-			throw new ObjReaderExceptions.ObjReaderException("Too few normal arguments.", lineInd);
+			throw new ObjReaderException("Too few normal arguments.", lineInd);
 		}
 	}
 
-	protected static Polygon parseFace(final List<String> wordsInLineWithoutToken, int lineInd) {
-		if (wordsInLineWithoutToken.size() < 3) {
-			throw new ObjReaderExceptions.ObjReaderException("Not enough information! A polygon requires at least three points!", lineInd);
-		}
-
-		ArrayList<Integer> onePolygonVertexIndices = new ArrayList<>();
-		ArrayList<Integer> onePolygonTextureVertexIndices = new ArrayList<>();
-		ArrayList<Integer> onePolygonNormalIndices = new ArrayList<>();
+	protected static Polygon parseFace(final ArrayList<String> wordsInLineWithoutToken, int lineInd) {
+		ArrayList<Integer> onePolygonVertexIndices = new ArrayList<Integer>();
+		ArrayList<Integer> onePolygonTextureVertexIndices = new ArrayList<Integer>();
+		ArrayList<Integer> onePolygonNormalIndices = new ArrayList<Integer>();
 
 		for (String s : wordsInLineWithoutToken) {
 			parseFaceWord(s, onePolygonVertexIndices, onePolygonTextureVertexIndices, onePolygonNormalIndices, lineInd);
 		}
-
-		//предотвращение f 1//3 1/2/3 1 1/2
-		checkCorrectFaceFormat(onePolygonVertexIndices, onePolygonTextureVertexIndices, onePolygonNormalIndices, lineInd);
 
 		Polygon result = new Polygon();
 		result.setVertexIndices(onePolygonVertexIndices);
@@ -140,22 +120,16 @@ public class ObjReader {
 	// В радикальных случаях не бойтесь выносить в отдельные методы и тестировать код из одной-двух строчек.
 	protected static void parseFaceWord(
 			String wordInLine,
-			List<Integer> onePolygonVertexIndices,
-			List<Integer> onePolygonTextureVertexIndices,
-			List<Integer> onePolygonNormalIndices,
+			ArrayList<Integer> onePolygonVertexIndices,
+			ArrayList<Integer> onePolygonTextureVertexIndices,
+			ArrayList<Integer> onePolygonNormalIndices,
 			int lineInd) {
 		try {
-			String[] wordIndices = wordInLine.split("/+");
-			/*for (String s : wordIndices) {
-				System.out.print(s + ", ");
-			}*/
-			for (String value : wordIndices) {
-				if (Integer.parseInt(value) < 0) {
-					throw new ObjReaderExceptions.ObjContentException("Index cannot be negative!");
-				}
-			}
+			String[] wordIndices = wordInLine.split("/");
 			switch (wordIndices.length) {
-				case 1 -> onePolygonVertexIndices.add(Integer.parseInt(wordIndices[0]) - 1);
+				case 1 -> {
+					onePolygonVertexIndices.add(Integer.parseInt(wordIndices[0]) - 1);
+				}
 				case 2 -> {
 					onePolygonVertexIndices.add(Integer.parseInt(wordIndices[0]) - 1);
 					onePolygonTextureVertexIndices.add(Integer.parseInt(wordIndices[1]) - 1);
@@ -167,31 +141,16 @@ public class ObjReader {
 						onePolygonTextureVertexIndices.add(Integer.parseInt(wordIndices[1]) - 1);
 					}
 				}
-				default -> throw new ObjReaderExceptions.ObjReaderException("Invalid element size.", lineInd);
+				default -> {
+					throw new ObjReaderException("Invalid element size.", lineInd);
+				}
 			}
 
 		} catch(NumberFormatException e) {
-			throw new ObjReaderExceptions.ObjReaderException("Failed to parse int value.", lineInd);
+			throw new ObjReaderException("Failed to parse int value.", lineInd);
 
 		} catch(IndexOutOfBoundsException e) {
-			throw new ObjReaderExceptions.ObjReaderException("Too few arguments.", lineInd);
-		}
-	}
-	protected static void checkCorrectFaceFormat(List<Integer> onePolygonVertexIndices,
-												 List<Integer> onePolygonTextureVertexIndices,
-												 List<Integer> onePolygonNormalIndices,
-												 int lineInd) {
-		if (onePolygonVertexIndices.size() != onePolygonTextureVertexIndices.size()
-				&& onePolygonVertexIndices.size()!=0 && onePolygonTextureVertexIndices.size()!=0) {
-			throw new ObjReaderExceptions.ObjReaderException("Incorrect format in the face description. Unreal situation!", lineInd);
-		}
-		if (onePolygonVertexIndices.size() != onePolygonNormalIndices.size()
-				&& onePolygonVertexIndices.size()!=0 && onePolygonNormalIndices.size() != 0) {
-			throw new ObjReaderExceptions.ObjReaderException("Incorrect format in the face description. Unreal situation!", lineInd);
-		}
-		if (onePolygonTextureVertexIndices.size() != onePolygonNormalIndices.size()
-				&& onePolygonTextureVertexIndices.size()!=0 && onePolygonNormalIndices.size() != 0) {
-			throw new ObjReaderExceptions.ObjReaderException("Incorrect format in the face description. Unreal situation!", lineInd);
+			throw new ObjReaderException("Too few arguments.", lineInd);
 		}
 	}
 }

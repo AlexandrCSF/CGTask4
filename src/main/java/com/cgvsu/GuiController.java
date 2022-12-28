@@ -15,11 +15,14 @@ import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.IOException;
 import java.io.File;
 import java.util.HashMap;
+import javax.imageio.ImageIO;
 import javax.vecmath.Vector3f;
 
 import com.cgvsu.model.Model;
@@ -28,9 +31,11 @@ import com.cgvsu.render_engine.Camera;
 
 public class GuiController {
 
-    Color fillColor = Color.AQUA;
+    private static Color fillColor = Color.AQUA;
 
-    HashMap<RenderStyle, Boolean> renderProperties = new HashMap<>();
+    private Color[][] texture;
+
+    public static HashMap<RenderStyle, Boolean> renderProperties = new HashMap<>();
 
     final private float TRANSLATION = 0.5F;
 
@@ -59,6 +64,8 @@ public class GuiController {
 
         renderProperties.put(RenderStyle.Polygonal_Grid,true);
         renderProperties.put(RenderStyle.Color_Fill,false);
+        renderProperties.put(RenderStyle.Texture,false);
+        renderProperties.put(RenderStyle.Light,false);
 
         KeyFrame frame = new KeyFrame(Duration.millis(15), event -> {
             double width = canvas.getWidth();
@@ -68,8 +75,7 @@ public class GuiController {
             camera.setAspectRatio((float) (width / height));
 
             if (mesh != null) {
-                ModelUtils.triangulatePolygons(mesh);
-                RenderEngine.render(canvas.getGraphicsContext2D(), camera, mesh, (int) width, (int) height, fillColor, renderProperties);
+                RenderEngine.render(canvas.getGraphicsContext2D(), camera, mesh, (int) width, (int) height, fillColor, renderProperties,texture);
             }
         });
 
@@ -98,6 +104,7 @@ public class GuiController {
         try {
             String fileContent = Files.readString(fileName);
             mesh = ObjReader.read(fileContent);
+            ModelUtils.triangulatePolygons(mesh);
             // todo: обработка ошибок
         } catch (IOException exception) {
 
@@ -110,8 +117,21 @@ public class GuiController {
     }
 
     @FXML
-    private void setRenderStyleToColorFill() {
+    private void switchColorFill() {
+
         renderProperties.put(RenderStyle.Color_Fill, !renderProperties.get(RenderStyle.Color_Fill));
+        renderProperties.put(RenderStyle.Texture, false);
+    }
+
+    @FXML
+    private void switchTexture() throws IOException {
+        File imgFile = new File("C:\\Users\\debek\\Desktop\\IdeaProjects\\Simple3DViewerInitial\\texture.jpg");
+        BufferedImage image = ImageIO.read(imgFile);
+
+        texture = Utils.convertImageToIntArray(image);
+
+        renderProperties.put(RenderStyle.Texture, !renderProperties.get(RenderStyle.Texture));
+        renderProperties.put(RenderStyle.Color_Fill, false);
     }
 
     @FXML
