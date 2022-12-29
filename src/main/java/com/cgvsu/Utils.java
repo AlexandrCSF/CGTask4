@@ -55,15 +55,16 @@ public class Utils {
         return cosLight;
     }
 
-    public static Color[][] convertImageToIntArray(BufferedImage image){
+    public static int[][] convertImageToIntArray(BufferedImage image){
         int width = image.getWidth();
         int height = image.getHeight();
-        Color[][] result = new Color[height][width];
+        int[][] result = new int[height][width];
 
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
+                result[row][col] = image.getRGB(col,row);
             }
         }
-        return null;
+        return result;
     }
 }

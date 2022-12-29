@@ -56,6 +56,7 @@
             <CheckMenuItem mnemonicParsing="false" onAction="#switchPolygonalGrid" text="Polygonal Grid" selected="true"/>
             <CheckMenuItem mnemonicParsing="false" onAction="#switchColorFill" text="Color Fill"/>
             <CheckMenuItem mnemonicParsing="false" onAction="#switchTexture" text="Texture"/>
+            <CheckMenuItem mnemonicParsing="false" onAction="#switchLight" text="Light"/>
         </Menu>
     </MenuBar>
     <Canvas fx:id="canvas" width="1600" height="870" AnchorPane.topAnchor="30.0"/>

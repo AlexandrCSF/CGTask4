@@ -33,7 +33,7 @@ public class GuiController {
 
     private static Color fillColor = Color.AQUA;
 
-    private Color[][] texture;
+    private int[][] texture;
 
     public static HashMap<RenderStyle, Boolean> renderProperties = new HashMap<>();
 
@@ -73,7 +73,6 @@ public class GuiController {
 
             canvas.getGraphicsContext2D().clearRect(0, 0, width, height);
             camera.setAspectRatio((float) (width / height));
-
             if (mesh != null) {
                 RenderEngine.render(canvas.getGraphicsContext2D(), camera, mesh, (int) width, (int) height, fillColor, renderProperties,texture);
             }
@@ -125,7 +124,7 @@ public class GuiController {
 
     @FXML
     private void switchTexture() throws IOException {
-        File imgFile = new File("C:\\Users\\debek\\Desktop\\IdeaProjects\\Simple3DViewerInitial\\texture.jpg");
+        File imgFile = new File("C:\\Users\\debek\\Desktop\\CGTask4-master\\texture.png");
         BufferedImage image = ImageIO.read(imgFile);
 
         texture = Utils.convertImageToIntArray(image);
@@ -134,6 +133,10 @@ public class GuiController {
         renderProperties.put(RenderStyle.Color_Fill, false);
     }
 
+    @FXML
+    private void switchLight(){
+        renderProperties.put(RenderStyle.Light,  !renderProperties.get(RenderStyle.Light));
+    }
     @FXML
     public void handleCameraForward(ActionEvent actionEvent) {
         camera.movePosition(new Vector3f(0, 0, -TRANSLATION));
