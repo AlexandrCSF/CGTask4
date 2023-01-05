@@ -1,6 +1,7 @@
 package com.cgvsu.render_engine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -65,20 +66,27 @@ public class RenderEngine {
 
             if (renderProperties.get(RenderStyle.Polygonal_Grid)) {
                 for (int vertexInPolygonInd = 1; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
-                    graphicsContext.strokeLine(
+                    Rasterization.drawLineWithZbuffer(graphicsUtils,
                             resultPoints.get(vertexInPolygonInd - 1).x,
                             resultPoints.get(vertexInPolygonInd - 1).y,
+                            pointsZ.get(vertexInPolygonInd - 1),
                             resultPoints.get(vertexInPolygonInd).x,
-                            resultPoints.get(vertexInPolygonInd).y);
+                            resultPoints.get(vertexInPolygonInd).y,
+                            pointsZ.get(vertexInPolygonInd),
+                            Color.BLACK,Color.BLACK,
+                            zBuffer,camera ,graphicsContext.getCanvas());
                 }
 
                 if (nVerticesInPolygon > 0)
-                    graphicsContext.strokeLine(
+                    Rasterization.drawLineWithZbuffer(graphicsUtils,
                             resultPoints.get(nVerticesInPolygon - 1).x,
                             resultPoints.get(nVerticesInPolygon - 1).y,
+                            pointsZ.get(nVerticesInPolygon - 1),
                             resultPoints.get(0).x,
-                            resultPoints.get(0).y);
-
+                            resultPoints.get(0).y,
+                            pointsZ.get(0),
+                            Color.BLACK,Color.BLACK,
+                            zBuffer,camera,graphicsContext.getCanvas());
             }
             if (renderProperties.get(RenderStyle.Color_Fill)) {
                 Rasterization.fillTriangle(graphicsUtils, new MyPoint3D(resultPoints.get(0).x, resultPoints.get(0).y, pointsZ.get(0)),
@@ -91,35 +99,16 @@ public class RenderEngine {
             }
             if (renderProperties.get(RenderStyle.Texture)) {
                 ArrayList<Integer> textureCordsIndices = mesh.polygons.get(polygonInd).getTextureVertexIndices();
-                double[] red = new double[3];
-                double[] green = new double[3];
-                double[] blue = new double[3];
-                /*for (int i = 0; i < 3; i++) {
-                    red[i] = ((texture[(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getX() * texture.length)]
-                            [(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getY() * texture[0].length)] & 0xff0000) >> 16) / 255.0;
-                    green[i] = ((texture[(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getX() * texture.length)]
-                            [(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getY() * texture[0].length)] & 0xff00) >> 8) / 255.0;
-                    blue[i] = (texture[(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getX() * texture.length)]
-                            [(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getY() * texture[0].length)] & 0xff) / 255.0;
-                }*/
-                for (int i = 0; i < 3; i++) {
-                    red[i] = ((texture[(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getY() * texture[0].length)]
-                            [(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getX() * texture.length)] & 0xff0000) >> 16) / 255.0;
-                    green[i] = ((texture[(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getY() * texture[0].length)]
-                            [(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getX() * texture.length)] & 0xff00) >> 8) / 255.0;
-                    blue[i] = (texture[(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getY() * texture[0].length)]
-                            [(int) (mesh.textureVertices.get(textureCordsIndices.get(i)).getX() * texture.length)] & 0xff) / 255.0;
-                }
 
-                Rasterization.fillTriangle(graphicsUtils,
+                Rasterization.fillTriangleWithTexture(graphicsUtils,
                         new MyPoint3D(resultPoints.get(0).x, resultPoints.get(0).y,pointsZ.get(0)),
                         new MyPoint3D(resultPoints.get(1).x, resultPoints.get(1).y,pointsZ.get(1)),
                         new MyPoint3D(resultPoints.get(2).x, resultPoints.get(2).y,pointsZ.get(2)),
-                        new MyColor(red[0],green[0], blue[0]),
-                        new MyColor(red[1],green[1], blue[1]),
-                        new MyColor(red[2],green[2], blue[2]),
-                        zBuffer,camera);
+                        zBuffer,camera,texture,textureCordsIndices,mesh);
             }
+        }
+        for (Double[] doubles : zBuffer) {
+            Arrays.fill(doubles, null);
         }
     }
 }

@@ -78,6 +78,7 @@ public class ModelUtils {
         }
         return triangles;
     }
+
     public static void triangulatePolygons(Model model) {
         ArrayList<Polygon> triangles = new ArrayList<>();
         for (Polygon polygon : model.polygons) {

@@ -9,6 +9,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -32,6 +33,8 @@ import com.cgvsu.render_engine.Camera;
 public class GuiController {
 
     private static Color fillColor = Color.AQUA;
+    public CheckMenuItem textureButton;
+    public CheckMenuItem colorFill;
 
     private int[][] texture;
 
@@ -120,17 +123,28 @@ public class GuiController {
 
         renderProperties.put(RenderStyle.Color_Fill, !renderProperties.get(RenderStyle.Color_Fill));
         renderProperties.put(RenderStyle.Texture, false);
+        textureButton.setSelected(false);
     }
 
     @FXML
     private void switchTexture() throws IOException {
-        File imgFile = new File("C:\\Users\\debek\\Desktop\\CGTask4-master\\texture.png");
-        BufferedImage image = ImageIO.read(imgFile);
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Portable Network Graphics (*.png)", "*.png","*.jpg"));
+        fileChooser.setTitle("Load Texture");
+
+        File file = fileChooser.showOpenDialog((Stage) canvas.getScene().getWindow());
+        if (file == null) {
+            return;
+        }
+
+        BufferedImage image = ImageIO.read(file);
 
         texture = Utils.convertImageToIntArray(image);
 
         renderProperties.put(RenderStyle.Texture, !renderProperties.get(RenderStyle.Texture));
         renderProperties.put(RenderStyle.Color_Fill, false);
+        colorFill.setSelected(false);
     }
 
     @FXML
