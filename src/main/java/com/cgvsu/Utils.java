@@ -2,27 +2,12 @@ package com.cgvsu;
 
 import com.cgvsu.rasterization.MyPoint3D;
 import com.cgvsu.render_engine.Camera;
+import javafx.collections.ObservableList;
 
-import javax.vecmath.Point2f;
 import javax.vecmath.Vector3d;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import javax.vecmath.Vector3f;
 
 public class Utils {
-    public static double[] listOfPointsToArrayOfXs(final ArrayList<Point2f> points){
-        double[] result = new double[points.size()];
-        for (int i = 0; i < points.size(); i++) {
-            result[i] = points.get(i).x;
-        }
-        return result;
-    }
-    public static double[] listOfPointsToArrayOfYs(final ArrayList<Point2f> points){
-        double[] result = new double[points.size()];
-        for (int i = 0; i < points.size(); i++) {
-            result[i] = points.get(i).y;
-        }
-        return result;
-    }
 
     public static Vector3d getNormal(MyPoint3D p1, MyPoint3D p2, MyPoint3D p3) {
         Vector3d p1p2 = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ());
@@ -48,16 +33,16 @@ public class Utils {
                                         + camera.getPosition().z * camera.getPosition().z))));
     }
 
-    public static int[][] convertImageToIntArray(BufferedImage image){
-        int width = image.getWidth();
-        int height = image.getHeight();
-        int[][] result = new int[height][width];
 
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                result[row][col] = image.getRGB(col,row);
-            }
+    public static String Vector3ftoString(Vector3f vector3f) {
+        return "x:" + String.format(String.valueOf(vector3f.x), 3) + " y:" +
+                String.format(String.valueOf(vector3f.y), 3) + " z:" + String.format(String.valueOf(vector3f.z), 3);
+    }
+
+    public static void recalculateIndexes(ObservableList<Camera> cameras, ObservableList<String> listOfCameras) {
+        for (int i = 0; i < cameras.size(); i++) {
+            listOfCameras.add(i + Utils.Vector3ftoString(cameras.get(i).getPosition()));
+            listOfCameras.remove(0);
         }
-        return result;
     }
 }

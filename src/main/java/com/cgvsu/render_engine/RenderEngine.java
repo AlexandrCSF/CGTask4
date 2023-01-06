@@ -1,11 +1,12 @@
 package com.cgvsu.render_engine;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import com.cgvsu.Utils;
 import com.cgvsu.math.Vector3f;
 import com.cgvsu.rasterization.*;
 import javafx.scene.canvas.Canvas;
@@ -15,12 +16,10 @@ import javax.vecmath.*;
 
 import com.cgvsu.model.Model;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 
 import static com.cgvsu.render_engine.GraphicConveyor.*;
 
 public class RenderEngine {
-
 
     public static void render(
             final GraphicsContext graphicsContext,
@@ -30,7 +29,7 @@ public class RenderEngine {
             final int height,
             Color fillColor,
             HashMap<RenderStyle, Boolean> renderProperties,
-            int[][] texture) {
+            BufferedImage texture) throws IOException {
         double redColor = fillColor.getRed();
         double greenColor = fillColor.getGreen();
         double blueColor = fillColor.getBlue();
@@ -98,13 +97,14 @@ public class RenderEngine {
                         zBuffer,camera);
             }
             if (renderProperties.get(RenderStyle.Texture)) {
-                ArrayList<Integer> textureCordsIndices = mesh.polygons.get(polygonInd).getTextureVertexIndices();
-
-                Rasterization.fillTriangleWithTexture(graphicsUtils,
-                        new MyPoint3D(resultPoints.get(0).x, resultPoints.get(0).y,pointsZ.get(0)),
-                        new MyPoint3D(resultPoints.get(1).x, resultPoints.get(1).y,pointsZ.get(1)),
-                        new MyPoint3D(resultPoints.get(2).x, resultPoints.get(2).y,pointsZ.get(2)),
-                        zBuffer,camera,texture,textureCordsIndices,mesh);
+                Rasterization.fillTriangle(graphicsUtils,
+                        resultPoints.get(0).x, resultPoints.get(0).y, pointsZ.get(0),
+                        resultPoints.get(1).x, resultPoints.get(1).y, pointsZ.get(1),
+                        resultPoints.get(2).x, resultPoints.get(2).y, pointsZ.get(2),
+                        MyColor.RED, MyColor.RED, MyColor.RED, zBuffer, camera, texture,
+                        mesh.textureVertices.get(mesh.polygons.get(polygonInd).getTextureVertexIndices().get(0)),
+                        mesh.textureVertices.get(mesh.polygons.get(polygonInd).getTextureVertexIndices().get(1)),
+                        mesh.textureVertices.get(mesh.polygons.get(polygonInd).getTextureVertexIndices().get(2)));
             }
         }
         for (Double[] doubles : zBuffer) {
