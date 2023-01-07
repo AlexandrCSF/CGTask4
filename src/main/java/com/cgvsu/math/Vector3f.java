@@ -83,4 +83,13 @@ public class Vector3f {
     public static Vector3f fromTwoPoints(Vector3f vertex1, Vector3f vertex2){
         return new Vector3f(vertex2.getX() - vertex1.getX(), vertex2.getY() - vertex1.getY(), vertex2.getZ()- vertex1.getZ());
     }
+
+    public void normalize(){
+        double length = Math.sqrt(x * x + y * y + z * z);
+        if(length != 0) {
+            x /= length;
+            y /= length;
+            z /= length;
+        }
+    }
 }

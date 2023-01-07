@@ -1,7 +1,6 @@
 package com.cgvsu;
 
 import com.cgvsu.math.Vector3d;
-import com.cgvsu.rasterization.MyPoint3D;
 import com.cgvsu.render_engine.Camera;
 import javafx.collections.ObservableList;
 
@@ -12,7 +11,7 @@ public class Utils {
     public static Vector3d getNormal(Vector3d p1, Vector3d p2, Vector3d p3) {
         Vector3d p1p2 = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ());
         Vector3d p1p3 = new Vector3d(p3.getX() - p1.getX(), p3.getY() - p1.getY(), p3.getZ() - p1.getZ());
-        return Vector3d.calculateCrossProduct(p1p2,p1p3);
+        return Vector3d.calculateCrossProduct(p1p2, p1p3);
     }
 
     public static double getZ(Vector3d p1, Vector3d p2, Vector3d p3, double x, double y) {
@@ -20,17 +19,19 @@ public class Utils {
         return (-normal.x * (x - p1.getX()) - normal.y * (y - p1.getY())) / normal.z + p1.getZ();
     }
 
-    // это плохо
     public static double getCosLight(Camera camera, Vector3d p1, Vector3d p2, Vector3d p3) {
         Vector3d normal = getNormal(p1, p2, p3);
-        return Math.abs(
-                (camera.getPosition().x * normal.x + camera.getPosition().y * normal.y + camera.getPosition().z * normal.z) /
-                        ((Math.sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z)) *
-                                (Math.sqrt(camera.getPosition().x * camera.getPosition().x
-                                        + camera.getPosition().y * camera.getPosition().y
-                                        + camera.getPosition().z * camera.getPosition().z))));
+        normal.normalize();
+        Vector3d target = Utils.normalize(camera.getTarget());
+        return dotProduct(normal, target);
     }
 
+    public static Vector3d normalize(Vector3f vector) {
+        double length = Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
+        if (length != 0)
+            return new Vector3d(vector.x / length, vector.y / length, vector.z / length);
+        return new Vector3d(0,0,0);
+    }
 
     public static String vector3ftoString(Vector3f vector3f) {
         return "x:" + String.format(String.valueOf(vector3f.x), 3) + " y:" +
@@ -42,5 +43,9 @@ public class Utils {
             listOfCameras.add(i + Utils.vector3ftoString(cameras.get(i).getPosition()));
             listOfCameras.remove(0);
         }
+    }
+
+    public static double dotProduct(Vector3d vector1, Vector3d vector2) {
+        return Math.abs(vector1.x * vector2.x + vector1.y * vector2.y + vector1.z + vector2.z);
     }
 }
