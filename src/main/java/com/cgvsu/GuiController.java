@@ -38,6 +38,7 @@ public class GuiController {
 
     private static final Color fillColor = Color.AQUA;
 
+    @FXML
     public CheckMenuItem textureButton;
     public CheckMenuItem colorFill;
     public MenuItem allCameras;
@@ -80,7 +81,7 @@ public class GuiController {
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Animation.INDEFINITE);
         cameras.add(currCamera);
-        ListOfCameras.getItems().add(0 + " " + Utils.Vector3ftoString(currCamera.getPosition()));
+        ListOfCameras.getItems().add(0 + " " + Utils.vector3ftoString(currCamera.getPosition()));
 
 
         renderProperties.put(RenderStyle.Polygonal_Grid, true);
@@ -88,7 +89,7 @@ public class GuiController {
         renderProperties.put(RenderStyle.Texture, false);
         renderProperties.put(RenderStyle.Light, false);
 
-        KeyFrame frame = new KeyFrame(Duration.millis(15), event -> {
+        KeyFrame frame = new KeyFrame(Duration.millis(500), event -> {
             double width = canvas.getWidth();
             double height = canvas.getHeight();
 
@@ -131,7 +132,7 @@ public class GuiController {
                     new Vector3f(targetX, targetY, targetZ), FOV, 1, 0.01F, 100);
             currCamera = camera;
             cameras.add(camera);
-            ListOfCameras.getItems().add(ListOfCameras.getItems().size() + " " + Utils.Vector3ftoString(camera.getPosition()));
+            ListOfCameras.getItems().add(ListOfCameras.getItems().size() + " " + Utils.vector3ftoString(camera.getPosition()));
         } catch (NumberFormatException ignored) {
         }
     }

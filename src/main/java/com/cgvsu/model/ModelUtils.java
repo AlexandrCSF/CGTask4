@@ -1,12 +1,11 @@
 package com.cgvsu.model;
 
-import com.cgvsu.math.Vector3f;
+import com.cgvsu.math.Vector3d;
 
-import java.time.chrono.MinguoDate;
 import java.util.ArrayList;
 
-import static com.cgvsu.math.Vector3f.*;
-import static com.cgvsu.math.Vector3f.sum;
+import static com.cgvsu.math.Vector3d.*;
+import static com.cgvsu.math.Vector3d.sum;
 
 public class ModelUtils {
 
@@ -17,19 +16,19 @@ public class ModelUtils {
         }
     }
 
-    protected static Vector3f calculateNormalForPolygon(final Polygon polygon, final Model model){
+    protected static Vector3d calculateNormalForPolygon(final Polygon polygon, final Model model){
 
         ArrayList<Integer> vertexIndices = polygon.getVertexIndices();
         int verticesCount = vertexIndices.size();
 
-        Vector3f vector1 = fromTwoPoints(model.vertices.get(vertexIndices.get(0)), model.vertices.get(vertexIndices.get(1)));
-        Vector3f vector2 = fromTwoPoints(model.vertices.get(vertexIndices.get(0)), model.vertices.get(vertexIndices.get(verticesCount - 1)));
+        Vector3d vector1 = fromTwoPoints(model.vertices.get(vertexIndices.get(0)), model.vertices.get(vertexIndices.get(1)));
+        Vector3d vector2 = fromTwoPoints(model.vertices.get(vertexIndices.get(0)), model.vertices.get(vertexIndices.get(verticesCount - 1)));
 
         return calculateCrossProduct(vector1, vector2);
     }
 
-    protected static Vector3f calculateNormalForVertexInModel(final Model model, final int vertexIndex) {
-        ArrayList<Vector3f> saved = new ArrayList<>();
+    protected static Vector3d calculateNormalForVertexInModel(final Model model, final int vertexIndex) {
+        ArrayList<Vector3d> saved = new ArrayList<>();
         for (Polygon polygon : model.polygons) {
             if (polygon.getVertexIndices().contains(vertexIndex)) {
                 saved.add(calculateNormalForPolygon(polygon, model));

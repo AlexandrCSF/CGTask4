@@ -37,7 +37,7 @@ public class Vector3f {
         return new Vector3f(getX() * num, getY() * num, getZ() * num);
     }
 
-    public static Vector3f sum(Vector3f ... vectors){
+    public static Vector3f sum(Vector3f... vectors){
         float x = vectors[0].getX();
         float y = vectors[0].getY();
         float z = vectors[0].getZ();
@@ -69,7 +69,7 @@ public class Vector3f {
         return new Vector3f(x / num, y / num, z / num);
     }
 
-    public static Vector3f calculateCrossProduct(Vector3f vector1,Vector3f vector2){
+    public static Vector3f calculateCrossProduct(Vector3f vector1, Vector3f vector2){
         float x = vector1.getY()* vector2.getZ() - vector1.getZ()* vector2.getY();
         float y = vector1.getZ() * vector2.getX() - vector1.getX() * vector2.getZ();
         float z = vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX();

@@ -5,6 +5,7 @@ package com.cgvsu.rasterization;
 import com.cgvsu.GuiController;
 import com.cgvsu.Utils;
 import com.cgvsu.math.Vector2f;
+import com.cgvsu.math.Vector3d;
 import com.cgvsu.render_engine.Camera;
 import com.cgvsu.render_engine.RenderStyle;
 import javafx.scene.canvas.Canvas;
@@ -19,15 +20,15 @@ import java.util.List;
 
 public class Rasterization {
 
-    public static void fillTriangle(
+    public static void fillTriangleWithTexture(
             final GraphicsUtils gr,
-            MyPoint3D p1, MyPoint3D p2, MyPoint3D p3,
+            Vector3d p1, Vector3d p2, Vector3d p3,
             MyColor myColor1, MyColor myColor2, MyColor myColor3,
             Double[][] zBuffer, Camera camera) {
 
-        List<MyPoint3D> points = new ArrayList<>(Arrays.asList(p1, p2, p3));
+        List<Vector3d> points = new ArrayList<>(Arrays.asList(p1, p2, p3));
 
-        points.sort(Comparator.comparingDouble(MyPoint3D::getY));
+        points.sort(Comparator.comparingDouble(Vector3d::getY));
         double cosLight;
         if (GuiController.renderProperties.get(RenderStyle.Light)) cosLight = Utils.getCosLight(camera, p1, p2, p3);
         else cosLight = 1;
@@ -69,7 +70,7 @@ public class Rasterization {
         }
 
         for (int x = (int) startX + 1; x < endX; x++) {
-            double z = Utils.getZ(new MyPoint3D(x1, y1, z1), new MyPoint3D(x2, y2, z2), new MyPoint3D(x3, y3, z3), x, y);
+            double z = Utils.getZ(new Vector3d(x1, y1, z1), new Vector3d(x2, y2, z2), new Vector3d(x3, y3, z3), x, y);
             if (x >= 0 && y >= 0) {
                 if (zBuffer[x][y] == null || zBuffer[x][y] > Math.abs(z - camera.getPosition().z)) {
                     gr.setPixel(x, y, getColor(myColor1, myColor2, myColor3, x, y, x1, x2, x3, y1, y2, y3, cosLight));
@@ -106,18 +107,18 @@ public class Rasterization {
         return new MyColor(rLight, gLight, bLight);
     }
 
-    public static void fillTriangle(
+    public static void fillTriangleWithTexture(
             final GraphicsUtils gr,
-            MyPoint3D p1, MyPoint3D p2, MyPoint3D p3,
+            Vector3d p1, Vector3d p2, Vector3d p3,
             MyColor myColor1, MyColor myColor2, MyColor myColor3,
             Double[][] zBuffer, Camera camera, BufferedImage image,
             Vector2f texturePoint1, Vector2f texturePoint2, Vector2f texturePoint3) throws IOException {
 
-        List<MyPoint3D> points = new ArrayList<>(Arrays.asList(p1, p2, p3));
+        List<Vector3d> points = new ArrayList<>(Arrays.asList(p1, p2, p3));
 
 
         if (points.get(0).getY() > points.get(1).getY()) {
-            MyPoint3D tmp = points.get(1);
+            Vector3d tmp = points.get(1);
             points.set(1, points.get(0));
             points.set(0, tmp);
             Vector2f tmp1 = texturePoint1;
@@ -125,14 +126,14 @@ public class Rasterization {
             texturePoint2 = tmp1;
         }
         if (points.get(1).getY() > points.get(2).getY()) {
-            MyPoint3D tmp = points.get(2);
+            Vector3d tmp = points.get(2);
             points.set(2, points.get(1));
             points.set(1, tmp);
             Vector2f tmp1 = texturePoint2;
             texturePoint2 = texturePoint3;
             texturePoint3 = tmp1;
             if (points.get(0).getY() > points.get(1).getY()) {
-                MyPoint3D tmp2 = points.get(1);
+                Vector3d tmp2 = points.get(1);
                 points.set(1, points.get(0));
                 points.set(0, tmp2);
                 Vector2f tmp3 = texturePoint1;
@@ -167,7 +168,7 @@ public class Rasterization {
         }
     }
 
-    public static void fillTriangle(
+    public static void fillTriangleWithTexture(
             GraphicsUtils gr,
             double x1, double y1, double z1,
             double x2, double y2, double z2,
@@ -175,7 +176,8 @@ public class Rasterization {
             MyColor myColor1, MyColor myColor2, MyColor myColor3,
             Double[][] zBuffer, Camera camera, BufferedImage image,
             Vector2f texturePoint1, Vector2f texturePoint2, Vector2f texturePoint3) throws IOException {
-        fillTriangle(gr, new MyPoint3D(x1, y1, z1), new MyPoint3D(x2, y2, z2), new MyPoint3D(x3, y3, z3),
+        fillTriangleWithTexture(gr, new Vector3d((float) x1, (float) y1, (float) z1), new Vector3d((float) x2, (float) y2, (float) z2),
+                new Vector3d((float) x3, (float) y3, (float) z3),
                 myColor1, myColor2, myColor3, zBuffer, camera, image, texturePoint1, texturePoint2, texturePoint3);
     }
 
@@ -234,7 +236,7 @@ public class Rasterization {
             double y1, double y2, double y3,
             double z1, double z2, double z3,
             Double[][] zBuffer, Camera camera, double cosLight, BufferedImage image,
-            Vector2f texturePoint1, Vector2f texturePoint2, Vector2f texturePoint3) throws IOException {
+            Vector2f texturePoint1, Vector2f texturePoint2, Vector2f texturePoint3){
 
         if (Double.compare(startX, endX) > 0) {
             double temp = startX;
@@ -243,7 +245,7 @@ public class Rasterization {
         }
 
         for (int x = (int) startX + 1; x < endX; x++) {
-            double z = Utils.getZ(new MyPoint3D(x1, y1, z1), new MyPoint3D(x2, y2, z2), new MyPoint3D(x3, y3, z3), x, y);
+            double z = Utils.getZ(new Vector3d(x1, y1, z1), new Vector3d(x2, y2, z2), new Vector3d(x3, y3, z3), x, y);
             if (x >= 0 && y >= 0) {
                 if (zBuffer[x][y] == null || zBuffer[x][y] > Math.abs(z - camera.getPosition().z)) {
                     MyColor color = getColor(myColor1, myColor2, myColor3, x, y, x1, x2, x3, y1, y2, y3, image,
@@ -279,7 +281,7 @@ public class Rasterization {
 
         } else {
 
-            float detT =  (1.0f /(float) ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)));
+            float detT = (1.0f / (float) ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)));
             float alpha = (float) ((x2 - x) * (y3 - y) - (y2 - y) * (x3 - x)) * detT;
             float betta = (float) ((x3 - x) * (y1 - y) - (y3 - y) * (x1 - x)) * detT;
             float gamma = 1.0f - (alpha + betta);
@@ -294,7 +296,7 @@ public class Rasterization {
         int width = image.getWidth() - 1;
         int height = image.getHeight() - 1;
         int x = (int) (x0 * width);
-        int y = (int) (y0 * height);
+        int y = (int) ((1 - y0) * height);
 
         int color = image.getRGB(x, y);
         double red = ((color & 0x00ff0000) >> 16) / 255.0f;

@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import com.cgvsu.math.Vector3f;
+import com.cgvsu.math.Vector3d;
 import com.cgvsu.rasterization.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -46,20 +46,21 @@ public class RenderEngine {
         final int nPolygons = mesh.polygons.size();
 
         Double[][] zBuffer = new Double[width][height];
+        Double[][] zBufferForPolygonalGrid = new Double[width][height];
 
         for (int polygonInd = 0; polygonInd < nPolygons; ++polygonInd) {
             final int nVerticesInPolygon = mesh.polygons.get(polygonInd).getVertexIndices().size();
 
             List<Double> pointsZ = new ArrayList<>();
-            ArrayList<Point2f> resultPoints = new ArrayList<>();
+            ArrayList<Point2d> resultPoints = new ArrayList<>();
             for (int vertexInPolygonInd = 0; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
-                Vector3f vertex = mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(vertexInPolygonInd));
+                Vector3d vertex = mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(vertexInPolygonInd));
 
-                javax.vecmath.Vector3f vertexVecmath = new javax.vecmath.Vector3f(vertex.x, vertex.y, vertex.z);
+                Vector3d vertexVecmath = new Vector3d(vertex.x, vertex.y, vertex.z);
 
                 pointsZ.add((double) vertex.z);
 
-                Point2f resultPoint = vertexToPoint(multiplyMatrix4ByVector3(modelViewProjectionMatrix, vertexVecmath), width, height);
+                Point2d resultPoint = vertexToPoint(multiplyMatrix4ByVector3(modelViewProjectionMatrix, vertexVecmath), width, height);
                 resultPoints.add(resultPoint);
             }
 
@@ -73,7 +74,7 @@ public class RenderEngine {
                             resultPoints.get(vertexInPolygonInd).y,
                             pointsZ.get(vertexInPolygonInd),
                             Color.BLACK,Color.BLACK,
-                            zBuffer,camera ,graphicsContext.getCanvas());
+                            zBufferForPolygonalGrid,camera ,graphicsContext.getCanvas());
                 }
 
                 if (nVerticesInPolygon > 0)
@@ -85,19 +86,19 @@ public class RenderEngine {
                             resultPoints.get(0).y,
                             pointsZ.get(0),
                             Color.BLACK,Color.BLACK,
-                            zBuffer,camera,graphicsContext.getCanvas());
+                            zBufferForPolygonalGrid,camera,graphicsContext.getCanvas());
             }
             if (renderProperties.get(RenderStyle.Color_Fill)) {
-                Rasterization.fillTriangle(graphicsUtils, new MyPoint3D(resultPoints.get(0).x, resultPoints.get(0).y, pointsZ.get(0)),
-                        new MyPoint3D(resultPoints.get(1).x,resultPoints.get(1).y, pointsZ.get(1)),
-                        new MyPoint3D(resultPoints.get(2).x, resultPoints.get(2).y, pointsZ.get(2)),
+                Rasterization.fillTriangleWithTexture(graphicsUtils, new Vector3d(resultPoints.get(0).x, resultPoints.get(0).y, pointsZ.get(0)),
+                        new Vector3d(resultPoints.get(1).x,resultPoints.get(1).y, pointsZ.get(1)),
+                        new Vector3d(resultPoints.get(2).x, resultPoints.get(2).y, pointsZ.get(2)),
                         new MyColor(redColor, greenColor, blueColor),
                         new MyColor(redColor, greenColor, blueColor),
                         new MyColor(redColor, greenColor, blueColor),
                         zBuffer,camera);
             }
             if (renderProperties.get(RenderStyle.Texture)) {
-                Rasterization.fillTriangle(graphicsUtils,
+                Rasterization.fillTriangleWithTexture(graphicsUtils,
                         resultPoints.get(0).x, resultPoints.get(0).y, pointsZ.get(0),
                         resultPoints.get(1).x, resultPoints.get(1).y, pointsZ.get(1),
                         resultPoints.get(2).x, resultPoints.get(2).y, pointsZ.get(2),
@@ -108,6 +109,9 @@ public class RenderEngine {
             }
         }
         for (Double[] doubles : zBuffer) {
+            Arrays.fill(doubles, null);
+        }
+        for (Double[] doubles : zBufferForPolygonalGrid) {
             Arrays.fill(doubles, null);
         }
     }
