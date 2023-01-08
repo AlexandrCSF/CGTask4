@@ -16,9 +16,4 @@ public class ObjReaderExceptions extends RuntimeException {
             super("Error! Impossible format! " + errorMessage);
         }
     }
-
-
-
-
-
 }
