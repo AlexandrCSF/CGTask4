@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="anchorPane" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cgvsu.GuiController">
+    <MenuBar>
+        <Menu mnemonicParsing="false" text="File">
+            <MenuItem mnemonicParsing="false" onAction="#onOpenModelMenuItemClick" text="Load Model">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+            </MenuItem>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Camera Options">
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraForward" text="Forward">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="UP" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraBackward" text="Backward">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="DOWN" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraLeft" text="Left">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="LEFT" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraRight" text="Right">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="RIGHT" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraUp" text="Up">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleCameraDown" text="Down">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+            </MenuItem>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Utils">
+            <MenuItem mnemonicParsing="false" onAction="#recalculateNormals" text="Recalculate Normals" />
+        </Menu>
+        <Menu mnemonicParsing="false" text="Render Properties">
+            <CheckMenuItem mnemonicParsing="false" onAction="#switchPolygonalGrid" selected="true" text="Polygonal Grid" />
+            <CheckMenuItem fx:id="colorFill" mnemonicParsing="false" onAction="#switchColorFill" text="Color Fill" />
+            <CheckMenuItem fx:id="textureButton" mnemonicParsing="false" onAction="#switchTexture" text="Texture" />
+            <CheckMenuItem mnemonicParsing="false" onAction="#switchLight" text="Light" />
+        </Menu>
+        <Menu mnemonicParsing="false" text="Cameras">
+            <MenuItem fx:id="addCamera" mnemonicParsing="false" onAction="#addCamera" text="Add Camera" />
+            <MenuItem mnemonicParsing="false">
+                <graphic>
+                    <Pane prefHeight="200.0" prefWidth="200.0">
+                        <children>
+                            <TextField fx:id="PositionX" text="PositionX" />
+                            <TextField fx:id="PositionY" layoutY="25.0" text="PositionY" />
+                            <TextField fx:id="PositionZ" layoutY="50.0" text="PositionZ" />
+                            <TextField fx:id="TargetX" layoutX="150.0" text="TargetX" />
+                            <TextField fx:id="TargetY" layoutX="150.0" layoutY="25.0" text="TargetY" />
+                            <TextField fx:id="TargetZ" layoutX="150.0" layoutY="50.0" text="TargetZ" />
+                            <TextField fx:id="FOV" layoutY="75.0" text="FOV" />
+                        </children>
+                    </Pane>
+                </graphic>
+            </MenuItem>
+            <MenuItem fx:id="allCameras" mnemonicParsing="false" text="All Cameras">
+            <graphic>
+               <ListView fx:id="ListOfCameras" />
+            </graphic></MenuItem>
+         <MenuItem mnemonicParsing="false" onAction="#selectCamera" text="Select Camera" />
+         <MenuItem mnemonicParsing="false" onAction="#deleteCamera" text="Delete Camera" />
+         <MenuItem mnemonicParsing="false" text="Camera Index">
+            <graphic>
+               <TextField fx:id="cameraIndex" />
+            </graphic></MenuItem>
+        </Menu>
+    </MenuBar>
+    <Canvas fx:id="canvas" height="870" width="1600" AnchorPane.topAnchor="30.0" />
+</AnchorPane>
