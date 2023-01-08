@@ -1,5 +1,4 @@
 package com.cgvsu.render_engine;
-
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix4f;
 
@@ -56,14 +55,10 @@ public class Camera {
         return GraphicConveyor.perspective(fov, aspectRatio, nearPlane, farPlane);
     }
 
-    public float getFov() {
-        return fov;
-    }
-
     private Vector3f position;
     private Vector3f target;
-    private final float fov;
+    private float fov;
     private float aspectRatio;
-    private final float nearPlane;
-    private final float farPlane;
+    private float nearPlane;
+    private float farPlane;
 }

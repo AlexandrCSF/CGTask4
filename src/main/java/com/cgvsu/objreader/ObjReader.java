@@ -1,7 +1,7 @@
 package com.cgvsu.objreader;
 
 import com.cgvsu.math.Vector2f;
-import com.cgvsu.math.Vector3d;
+import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.Model;
 import com.cgvsu.model.Polygon;
 
@@ -56,13 +56,13 @@ public class ObjReader {
 	// f 1//3 1/2/3 1 1/2
 
 	// Всем методам кроме основного я поставил модификатор доступа protected, чтобы обращаться к ним в тестах
-	protected static Vector3d parseVertex(final List<String> wordsInLineWithoutToken, int lineInd) {
+	protected static Vector3f parseVertex(final List<String> wordsInLineWithoutToken, int lineInd) {
 		if (wordsInLineWithoutToken.size() != 3) {
 			throw new ObjReaderExceptions.ObjReaderException("The number of vertex coordinates is incorrect", lineInd);
 		}
 
 		try {
-			return new Vector3d(
+			return new Vector3f(
 					Float.parseFloat(wordsInLineWithoutToken.get(0)),
 					Float.parseFloat(wordsInLineWithoutToken.get(1)),
 					Float.parseFloat(wordsInLineWithoutToken.get(2)));
@@ -93,13 +93,13 @@ public class ObjReader {
 		}
 	}
 
-	protected static Vector3d parseNormal(final List<String> wordsInLineWithoutToken, int lineInd) {
+	protected static Vector3f parseNormal(final List<String> wordsInLineWithoutToken, int lineInd) {
 		if (wordsInLineWithoutToken.size() != 3) {
 			throw new ObjReaderExceptions.ObjReaderException("The number of normal coordinates is incorrect", lineInd);
 		}
 
 		try {
-			return new Vector3d(
+			return new Vector3f(
 					Float.parseFloat(wordsInLineWithoutToken.get(0)),
 					Float.parseFloat(wordsInLineWithoutToken.get(1)),
 					Float.parseFloat(wordsInLineWithoutToken.get(2)));

@@ -41,4 +41,17 @@ public class Polygon {
     public ArrayList<Integer> getNormalIndices() {
         return normalIndices;
     }
+
+    public int getSizePolygonsVertexIndices(){
+        return vertexIndices.size();
+    }
+
+    public int getSizePolygonsTextureVertexIndices(){
+        return textureVertexIndices.size();
+    }
+
+    public int getSizePolygonsNormalIndices(){
+        return normalIndices.size();
+    }
+
 }
