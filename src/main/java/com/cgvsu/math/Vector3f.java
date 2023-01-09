@@ -5,16 +5,18 @@ import java.util.ArrayList;
 // Это заготовка для собственной библиотеки для работы с линейной алгеброй
 public class Vector3f {
 
-    public Vector3f(javax.vecmath.Vector3f vector3f){
-        this.x = vector3f.x;
-        this.y = vector3f.y;
-        this.z = vector3f.z;
+    public Vector3f(float x, float y, float z, float w) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
     }
     public Vector3f(float x, float y, float z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
+
 
     public boolean equals(Vector3f other) {
         // todo: желательно, чтобы это была глобальная константа
@@ -25,6 +27,7 @@ public class Vector3f {
     public float x;
     public float y;
     public float z;
+    public float w = 1;
 
     public float getX() {
         return x;
@@ -37,12 +40,15 @@ public class Vector3f {
     public float getZ() {
         return z;
     }
+    public float getW() {
+        return w;
+    }
 
     public Vector3f multiplication(float num){
         return new Vector3f(getX() * num, getY() * num, getZ() * num);
     }
 
-    public static Vector3f sum(Vector3f... vectors){
+    public static Vector3f sum(Vector3f ... vectors){
         float x = vectors[0].getX();
         float y = vectors[0].getY();
         float z = vectors[0].getZ();
@@ -74,7 +80,7 @@ public class Vector3f {
         return new Vector3f(x / num, y / num, z / num);
     }
 
-    public static Vector3f calculateCrossProduct(Vector3f vector1, Vector3f vector2){
+    public static Vector3f calculateCrossProduct(Vector3f vector1,Vector3f vector2){
         float x = vector1.getY()* vector2.getZ() - vector1.getZ()* vector2.getY();
         float y = vector1.getZ() * vector2.getX() - vector1.getX() * vector2.getZ();
         float z = vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX();
@@ -89,15 +95,10 @@ public class Vector3f {
         return new Vector3f(vertex2.getX() - vertex1.getX(), vertex2.getY() - vertex1.getY(), vertex2.getZ()- vertex1.getZ());
     }
 
-    public void normalize(){
-        double length = Math.sqrt(x * x + y * y + z * z);
-        if(length != 0) {
-            x /= length;
-            y /= length;
-            z /= length;
-        }
-    }
-    public static Vector3f multiplication(Vector3f vector, float num){
-        return new Vector3f(vector.getX() * num, vector.getY()* num, vector.getZ()* num);
+    public void applyMatrix(float[][] matrix) {
+        Vector3f result = Matrix.multiplyVector(matrix, this);
+        this.x = result.x;
+        this.y = result.y;
+        this.z = result.z;
     }
 }

@@ -1,25 +1,22 @@
 package com.cgvsu.render_engine;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
-import com.cgvsu.math.Vector3d;
+import com.cgvsu.Utils;
+import com.cgvsu.math.Vector3f;
 import com.cgvsu.rasterization.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-
 import javax.vecmath.*;
-
 import com.cgvsu.model.Model;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 import static com.cgvsu.render_engine.GraphicConveyor.*;
 
 public class RenderEngine {
+
 
     public static void render(
             final GraphicsContext graphicsContext,
@@ -28,8 +25,8 @@ public class RenderEngine {
             final int width,
             final int height,
             Color fillColor,
-            HashMap<RenderStyle, Boolean> renderProperties,
-            BufferedImage texture) throws IOException {
+            HashMap<RenderStyle,Boolean> renderProperties)
+    {
         double redColor = fillColor.getRed();
         double greenColor = fillColor.getGreen();
         double blueColor = fillColor.getBlue();
@@ -44,81 +41,40 @@ public class RenderEngine {
         modelViewProjectionMatrix.mul(projectionMatrix);
 
         final int nPolygons = mesh.polygons.size();
-
-        Double[][] zBuffer = new Double[width][height];
-        Double[][] zBufferForPolygonalGrid = new Double[width][height];
-
         for (int polygonInd = 0; polygonInd < nPolygons; ++polygonInd) {
             final int nVerticesInPolygon = mesh.polygons.get(polygonInd).getVertexIndices().size();
 
-            List<Double> pointsZ = new ArrayList<>();
-            ArrayList<Point2d> resultPoints = new ArrayList<>();
+            ArrayList<Point2f> resultPoints = new ArrayList<>();
             for (int vertexInPolygonInd = 0; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
-                Vector3d vertex = mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(vertexInPolygonInd));
+                Vector3f vertex = mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(vertexInPolygonInd));
 
-                Vector3d vertexVecmath = new Vector3d(vertex.x, vertex.y, vertex.z);
+                javax.vecmath.Vector3f vertexVecmath = new javax.vecmath.Vector3f(vertex.x, vertex.y, vertex.z);
 
-                pointsZ.add((double) vertex.z);
-
-                Point2d resultPoint = vertexToPoint(multiplyMatrix4ByVector3(modelViewProjectionMatrix, vertexVecmath), width, height);
+                Point2f resultPoint = vertexToPoint(multiplyMatrix4ByVector3(modelViewProjectionMatrix, vertexVecmath), width, height);
                 resultPoints.add(resultPoint);
             }
 
             if (renderProperties.get(RenderStyle.Polygonal_Grid)) {
                 for (int vertexInPolygonInd = 1; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
-                    Rasterization.drawLineWithZbuffer(graphicsUtils,
+                    graphicsContext.strokeLine(
                             resultPoints.get(vertexInPolygonInd - 1).x,
                             resultPoints.get(vertexInPolygonInd - 1).y,
-                            pointsZ.get(vertexInPolygonInd - 1),
                             resultPoints.get(vertexInPolygonInd).x,
-                            resultPoints.get(vertexInPolygonInd).y,
-                            pointsZ.get(vertexInPolygonInd),
-                            Color.BLACK,Color.BLACK,
-                            zBufferForPolygonalGrid,camera ,graphicsContext.getCanvas());
+                            resultPoints.get(vertexInPolygonInd).y);
                 }
 
                 if (nVerticesInPolygon > 0)
-                    Rasterization.drawLineWithZbuffer(graphicsUtils,
+                    graphicsContext.strokeLine(
                             resultPoints.get(nVerticesInPolygon - 1).x,
                             resultPoints.get(nVerticesInPolygon - 1).y,
-                            pointsZ.get(nVerticesInPolygon - 1),
                             resultPoints.get(0).x,
-                            resultPoints.get(0).y,
-                            pointsZ.get(0),
-                            Color.BLACK,Color.BLACK,
-                            zBufferForPolygonalGrid,camera,graphicsContext.getCanvas());
+                            resultPoints.get(0).y);
+
+            } if(renderProperties.get(RenderStyle.Color_Fill)){
+                Rasterization.fillTriangle(graphicsUtils,new MyPoint2D(resultPoints.get(0).x,resultPoints.get(0).y),
+                    new MyPoint2D(resultPoints.get(1).x,resultPoints.get(1).y), new MyPoint2D(resultPoints.get(2).x,resultPoints.get(2).y),
+                    new MyColor(redColor,greenColor,blueColor),new MyColor(redColor,greenColor,blueColor),new MyColor(redColor,greenColor,blueColor));
             }
-            if (renderProperties.get(RenderStyle.Color_Fill)) {
-                Rasterization.fillTriangle(graphicsUtils, new Vector3d(resultPoints.get(0).x, resultPoints.get(0).y, pointsZ.get(0)),
-                        new Vector3d(resultPoints.get(1).x,resultPoints.get(1).y, pointsZ.get(1)),
-                        new Vector3d(resultPoints.get(2).x, resultPoints.get(2).y, pointsZ.get(2)),
-                        new MyColor(redColor, greenColor, blueColor),
-                        new MyColor(redColor, greenColor, blueColor),
-                        new MyColor(redColor, greenColor, blueColor),
-                        zBuffer,camera,
-                        mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(0)),
-                        mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(1)),
-                        mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(2)));
-            }
-            if (renderProperties.get(RenderStyle.Texture)) {
-                Rasterization.fillTriangleWithTexture(graphicsUtils,
-                        resultPoints.get(0).x, resultPoints.get(0).y, pointsZ.get(0),
-                        resultPoints.get(1).x, resultPoints.get(1).y, pointsZ.get(1),
-                        resultPoints.get(2).x, resultPoints.get(2).y, pointsZ.get(2),
-                        MyColor.RED, MyColor.RED, MyColor.RED, zBuffer, camera, texture,
-                        mesh.textureVertices.get(mesh.polygons.get(polygonInd).getTextureVertexIndices().get(0)),
-                        mesh.textureVertices.get(mesh.polygons.get(polygonInd).getTextureVertexIndices().get(1)),
-                        mesh.textureVertices.get(mesh.polygons.get(polygonInd).getTextureVertexIndices().get(2)),
-                        mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(0)),
-                        mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(1)),
-                        mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(2)));
-            }
-        }
-        for (Double[] doubles : zBuffer) {
-            Arrays.fill(doubles, null);
-        }
-        for (Double[] doubles : zBufferForPolygonalGrid) {
-            Arrays.fill(doubles, null);
         }
     }
 }

@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -19,7 +18,6 @@ public class Simple3DViewer extends Application {
         Scene scene = new Scene(viewport);
         stage.setMinWidth(1600);
         stage.setMinHeight(900);
-        scene.setFill(Color.BLACK);
         viewport.prefWidthProperty().bind(scene.widthProperty());
         viewport.prefHeightProperty().bind(scene.heightProperty());
 
